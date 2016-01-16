@@ -7,9 +7,23 @@ cd `dirname $0`
 if [ "$2" = "on" ]; then
 	curl --silent http://$1/relay?state=1
 	echo $2 > state_$1.txt
-else
+elif [ "$2" = "off" ]; then
 	curl --silent http://$1/relay?state=0
 	echo $2 > state_$1.txt
+else
+	report=`curl --silent http://$1/report`
+	#Find the position of ,
+	pos_komma=$(echo $report | grep -aob ',' | grep -oE '[0-9]+')
+	#Calculate length of power-value
+	powerlen=$(expr $pos_komma - 11)
+	power=${report:12:$powerlen}
+	echo $power > state_watt_$1.txt
+	if [[ $report == *"true"* ]]; then
+		echo "on" > state_$1.txt
+	else
+		echo "off" > state_$1.txt
+	fi
 fi
 
 cp state_$1.txt /var/www/states/light_$1.txt
+cp state_watt_$1.txt /var/www/states/light_watt_$1.txt
