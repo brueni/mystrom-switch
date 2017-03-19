@@ -10,6 +10,17 @@ if [ "$2" = "on" ]; then
 elif [ "$2" = "off" ]; then
 	curl --silent http://$1/relay?state=0
 	echo $2 > state_$1.txt
+elif [ "$2" = "toggle" ]; then
+	report=`curl --silent http://$1/report`
+	if [[ $report == *"true"* ]]; then
+		echo "jetzt an, schalte aus"
+		curl --silent http://$1/relay?state=0
+		echo "off" > state_$1.txt
+	else
+		echo "jetzt aus, schalte an"
+		curl --silent http://$1/relay?state=1
+		echo "on" > state_$1.txt
+	fi
 else
 	report=`curl --silent http://$1/report`
 	#Find the position of ,
