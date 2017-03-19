@@ -13,11 +13,11 @@ elif [ "$2" = "off" ]; then
 elif [ "$2" = "toggle" ]; then
 	report=`curl --silent http://$1/report`
 	if [[ $report == *"true"* ]]; then
-		echo "jetzt an, schalte aus"
+		#Is on, switching off
 		curl --silent http://$1/relay?state=0
 		echo "off" > state_$1.txt
 	else
-		echo "jetzt aus, schalte an"
+		#Is off, switching on
 		curl --silent http://$1/relay?state=1
 		echo "on" > state_$1.txt
 	fi
